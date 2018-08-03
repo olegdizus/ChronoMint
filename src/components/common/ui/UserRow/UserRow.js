@@ -12,7 +12,6 @@ import actionIcon from 'assets/img/icons/list.svg'
 import css from './UserRow.scss'
 
 export default class UserRow extends React.Component {
-  // FIXME: replace PropTypes.any to correct type
   static propTypes = {
     avatar: PropTypes.string,
     name: PropTypes.string,
