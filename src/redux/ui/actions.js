@@ -5,13 +5,15 @@
 
 import moment from 'moment'
 import { setLocale } from 'react-redux-i18n'
-import localStorage from 'utils/LocalStorage'
 import ipfs from '@chronobank/core/utils/IPFS'
-import { CHANGE_WALLET_VIEW } from './constants'
+import { CHANGE_WALLET_VIEW, UI_SET_LOCALE } from './constants'
 
 export const changeMomentLocale = (locale) => (dispatch) => {
   moment.locale(locale)
-  localStorage.setLocale(locale)
+  dispatch({
+    type: UI_SET_LOCALE,
+    locale,
+  })
   dispatch(setLocale(locale))
 }
 
