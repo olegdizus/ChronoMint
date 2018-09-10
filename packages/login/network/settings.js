@@ -47,7 +47,6 @@ const MAINNET_BASE = {
   id: NETWORK_MAIN_ID,
   protocol: 'https',
   name: 'Mainnet (production)',
-  scanner: blockExplorersMap.Ethereum.mainnet,
   [BLOCKCHAIN_BITCOIN]: 'bitcoin',
   [BLOCKCHAIN_BITCOIN_CASH]: 'bitcoin',
   [BLOCKCHAIN_LITECOIN]: 'litecoin',
@@ -59,7 +58,6 @@ const RINKEBY_BASE = {
   id: 4,
   protocol: 'https',
   name: 'Rinkeby (test network)',
-  scanner: blockExplorersMap.Ethereum.testnet,
   [BLOCKCHAIN_BITCOIN]: 'testnet',
   [BLOCKCHAIN_BITCOIN_CASH]: 'testnet',
   [BLOCKCHAIN_LITECOIN]: 'litecoin_testnet',
@@ -76,7 +74,15 @@ const BASE_NETWORK_MAP = [
 // --------- providers
 
 export const infuraMainnet = {
-  ...MAINNET_BASE,
+  id: NETWORK_MAIN_ID,
+  protocol: 'https',
+  name: 'Mainnet (production)',
+  [BLOCKCHAIN_BITCOIN]: 'bitcoin',
+  [BLOCKCHAIN_BITCOIN_CASH]: 'bitcoin',
+  [BLOCKCHAIN_BITCOIN_GOLD]: 'bitcoingold',
+  [BLOCKCHAIN_LITECOIN]: 'litecoin',
+  [BLOCKCHAIN_NEM]: 'mainnet',
+  [BLOCKCHAIN_WAVES]: 'MAINNET_CONFIG',
   host: `mainnet.infura.io/${INFURA_TOKEN}`,
   ws: 'wss://mainnet.infura.io/ws',
 }
@@ -96,7 +102,6 @@ const mewMainnet = {
   id: NETWORK_MAIN_ID,
   protocol: 'https',
   name: 'Mainnet (production MyEtherWallet)',
-  scanner: blockExplorersMap.Ethereum.mainnet,
   [BLOCKCHAIN_BITCOIN]: 'bitcoin',
   [BLOCKCHAIN_BITCOIN_CASH]: 'bitcoin',
   [BLOCKCHAIN_LITECOIN]: 'litecoin',
@@ -112,7 +117,6 @@ const givethMainnet = {
   id: NETWORK_MAIN_ID,
   protocol: 'https',
   name: 'Mainnet (production Giveth)',
-  scanner: blockExplorersMap.Ethereum.mainnet,
   [BLOCKCHAIN_BITCOIN]: 'bitcoin',
   [BLOCKCHAIN_BITCOIN_CASH]: 'bitcoin',
   [BLOCKCHAIN_LITECOIN]: 'litecoin',
