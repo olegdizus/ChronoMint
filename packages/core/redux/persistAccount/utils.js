@@ -9,6 +9,7 @@ import privateKeyProvider from '@chronobank/login/network/privateKeyProvider'
 import {
   AccountEntryModel,
 } from '../../models/wallet/persistAccount'
+import { isWalletInWalletsList } from './selectors'
 
 export const replaceWallet = (wallet, walletList) => {
   const index = walletList.findIndex((item) => item.key === wallet.key)
@@ -70,6 +71,15 @@ export const getAddressByPrivateKey = (privateKey) => {
   return privateKeyProvider
     .createEthereumWallet(privateKey)
     .getAddressString()
+}
+
+/**
+ * Is string can be used for account name
+ * @param {*} state Redux state
+ * @param {*} accountName Account name for verification
+ */
+export const validateAccountName = (state, accountName: string) => {
+  if (isWalletInWalletsList(state, accountName)) return false
 }
 
 export const validateMnemonicForAccount = (mnemonic, selectedWallet: AccountEntryModel) => {

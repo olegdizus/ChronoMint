@@ -74,14 +74,6 @@ export const decryptAccount = (encrypted, password) => () => {
   return accounts.wallet.decrypt(encrypted, password)
 }
 
-export const validateAccountName = (name) => (dispatch, getState) => {
-  const state = getState()
-
-  const { walletsList } = state.get(DUCK_PERSIST_ACCOUNT)
-
-  return !walletsList.find((item) => item.name === name)
-}
-
 export const resetPasswordAccount = (wallet, mnemonic, password) => async (dispatch) => {
   const accounts = new Accounts()
   accounts.wallet.clear()

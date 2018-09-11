@@ -37,3 +37,11 @@ export const getSelectedNetwork = () => createSelector(
     )
   },
 )
+
+export const getWalletsList = (state) => {
+  return getPersistAccount(state).walletsList
+}
+
+export const isWalletInWalletsList = (state, walletName: string) => {
+  return getWalletsList(state).find((item) => item.name === walletName)
+}

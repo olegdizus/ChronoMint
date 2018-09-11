@@ -27,6 +27,7 @@ import PublicBackendProvider from '@chronobank/login/network/PublicBackendProvid
 import { SignerMemoryModel } from '@chronobank/core/models'
 import {
   createAccountEntry,
+  validateAccountName,
 } from '@chronobank/core/redux/persistAccount/utils'
 import * as LoginUINavActions from './navigation'
 import {
@@ -195,9 +196,9 @@ export const onSubmitImportAccount = ({ name, password, mnemonic = '', privateKe
  */
 export const onSubmitCreateHWAccountPage = (walletName) =>
   async (dispatch, getState) => {
-    const validateName = dispatch(PersistAccountActions.validateAccountName(walletName))
+    const isAccountNameValid = validateAccountName(getState(), walletName)
 
-    if (!validateName) {
+    if (!isAccountNameValid) {
       throw new SubmissionError({ walletName: 'Wrong wallet name' })
     }
 
