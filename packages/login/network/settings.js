@@ -326,7 +326,7 @@ export const getNetworksSelectorGroup = () => {
       providers: developerNetworkProviders,
     })
   }
-
+  console.log(groups)
   return groups
 }
 
