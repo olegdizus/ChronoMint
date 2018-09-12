@@ -7,7 +7,6 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import {
-  downloadWallet,
   accountDeselect,
 } from '@chronobank/core/redux/persistAccount/actions'
 import {
@@ -32,7 +31,6 @@ import {
 function mapDispatchToProps (dispatch) {
   return {
     accountDeselect: () => dispatch(accountDeselect()),
-    downloadWallet: () => dispatch(downloadWallet()),
     getUserInfo: (addresses: string[]) => dispatch(ProfileThunks.getUserInfo(addresses)),
     navigateBack: () => dispatch(navigateBack()),
     navigateToSelectImportMethod: () => dispatch(navigateToSelectImportMethod()),
@@ -50,7 +48,6 @@ class PrivateKeyImportPage extends PureComponent {
 
   static propTypes = {
     accountDeselect: PropTypes.func,
-    downloadWallet: PropTypes.func,
     navigateToSelectWallet: PropTypes.func,
     navigateToSelectImportMethod: PropTypes.func,
     navigateBack: PropTypes.func,

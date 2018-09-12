@@ -4,25 +4,14 @@
  */
 
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { Translate } from 'react-redux-i18n'
 import React, { Component } from 'react'
 import Button from 'components/common/ui/Button/Button'
-import { downloadWallet } from '@chronobank/core/redux/persistAccount/actions'
 import Wallet from 'assets/img/icons/wallet-white.svg'
-import { navigateToLoginPage } from '../../redux/navigation'
 
 import './GenerateWallet.scss'
 
-function mapDispatchToProps (dispatch) {
-  return {
-    downloadWallet: () => dispatch(downloadWallet()),
-    navigateToLoginPage: () => dispatch(navigateToLoginPage()),
-  }
-}
-
-@connect(null, mapDispatchToProps)
-export default class MnemonicPage extends Component {
+export default class GenerateWallet extends Component {
   static propTypes = {
     downloadWallet: PropTypes.func,
     onContinue: PropTypes.func,

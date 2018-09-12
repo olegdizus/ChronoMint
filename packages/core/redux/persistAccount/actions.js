@@ -156,24 +156,6 @@ export const createHWAccount = ({ name, password, privateKey, mnemonic, numberOf
 
 }
 
-export const downloadWallet = () => (dispatch, getState) => {
-  const state = getState()
-
-  const { selectedWallet } = state.get(DUCK_PERSIST_ACCOUNT)
-
-  if (selectedWallet) {
-    const walletName = selectedWallet.name || 'Wallet'
-    const text = JSON.stringify(selectedWallet.encrypted.length > 1 ? selectedWallet.encrypted : selectedWallet.encrypted[0])
-    const element = document.createElement('a')
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
-    element.setAttribute('download', `${walletName}.wlt`)
-    element.style.display = 'none'
-    document.body.appendChild(element)
-    element.click()
-    document.body.removeChild(element)
-  }
-}
-
 export const setProfilesForAccounts = (walletsList) => async (dispatch) => {
 
   const addresses = getWalletsListAddresses(walletsList)
