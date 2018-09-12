@@ -3,15 +3,8 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import { persistReducer, REHYDRATE } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
+import { REHYDRATE } from 'redux-persist'
 import * as a from './constants'
-
-const persistConfig = {
-  key: 'account',
-  storage: storage,
-  blacklist: ['decryptedWallet', 'rehydrated'],
-}
 
 const initialState = {
   walletsList: [],
@@ -92,4 +85,4 @@ const persistAccount = (state = initialState, action) => {
   }
 }
 
-export default persistReducer(persistConfig, persistAccount)
+export default persistAccount
