@@ -28,6 +28,7 @@ import {
   WALLETS_ADD,
   WALLETS_DESELECT,
   WALLETS_SELECT,
+  WALLETS_UPDATE,
   WALLETS_UPDATE_LIST,
   WALLETS_LOAD,
 } from './constants'
@@ -236,3 +237,7 @@ export const customNetworksListUpdate = (list) => (dispatch) => {
 export const customNetworksListReset = () => (dispatch) => {
   dispatch({ type: CUSTOM_NETWORKS_LIST_RESET })
 }
+export const accountUpdate = (wallet) => ({
+  type: WALLETS_UPDATE,
+  wallet,
+})

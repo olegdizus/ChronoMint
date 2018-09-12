@@ -50,6 +50,16 @@ const persistAccount = (state = initialState, action) => {
         decryptedWallet: action.wallet,
       }
 
+    case a.WALLETS_UPDATE :
+      const { walletsList } = state
+      const { wallet } = action
+      const walletIndex = walletsList.findIndex(({ key }) => key === wallet.key)
+
+      return {
+        ...state,
+        walletsList: [...walletsList].splice(walletIndex, 1, wallet),
+      }
+
     case a.WALLETS_UPDATE_LIST :
       return {
         ...state,
