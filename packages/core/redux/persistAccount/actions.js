@@ -68,13 +68,6 @@ export const accountUpdate = (wallet) => (dispatch, getState) => {
 
 }
 
-export const decryptAccount = (encrypted, password) => () => {
-  const accounts = new Accounts()
-  accounts.wallet.clear()
-
-  return accounts.wallet.decrypt(encrypted, password)
-}
-
 export const resetPasswordAccount = (wallet, mnemonic, password) => async (dispatch) => {
   const accounts = new Accounts()
   accounts.wallet.clear()

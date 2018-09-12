@@ -3,6 +3,7 @@
  * Licensed under the AGPL Version 3 license.
  */
 
+import Accounts from 'web3-eth-accounts'
 import uuid from 'uuid/v1'
 import mnemonicProvider from '@chronobank/login/network/mnemonicProvider'
 import privateKeyProvider from '@chronobank/login/network/privateKeyProvider'
@@ -87,4 +88,11 @@ export const validateMnemonicForAccount = (mnemonic, selectedWallet: AccountEntr
   const address = getAddressByMnemonic(mnemonic)
 
   return addressFromWallet === address
+}
+
+export const decryptAccount = (encrypted, password) => {
+  const accounts = new Accounts()
+  accounts.wallet.clear()
+
+  return accounts.wallet.decrypt(encrypted, password)
 }

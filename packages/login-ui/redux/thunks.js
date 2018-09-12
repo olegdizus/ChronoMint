@@ -28,6 +28,7 @@ import { SignerMemoryModel } from '@chronobank/core/models'
 import {
   createAccountEntry,
   validateAccountName,
+  decryptAccount,
 } from '@chronobank/core/redux/persistAccount/utils'
 import * as LoginUINavActions from './navigation'
 import {
@@ -91,7 +92,7 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
   const { selectedWallet } = state.get(DUCK_PERSIST_ACCOUNT)
 
   try {
-    const wallet = dispatch(PersistAccountActions.decryptAccount(selectedWallet.encrypted, password))
+    const wallet = decryptAccount(selectedWallet.encrypted, password)
     dispatch(PersistAccountActions.accountLoad(new SignerMemoryModel({ wallet })))
 
     const privateKey = wallet && wallet[0] && wallet[0].privateKey
