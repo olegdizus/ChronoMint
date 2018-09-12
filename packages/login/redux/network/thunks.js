@@ -7,6 +7,9 @@
 
 import * as PersistAccountActions from '@chronobank/core/redux/persistAccount/actions'
 import {
+  setProfilesForAccounts,
+} from '@chronobank/core/redux/persistAccount/thunks'
+import {
   selectProvider,
 } from '@chronobank/core/redux/session/thunks'
 import {
@@ -79,7 +82,7 @@ export const initAccountsSignature = () =>
 
     dispatch(NetworkActions.loadingAccountsSignatures())
 
-    const accounts = await dispatch(PersistAccountActions.setProfilesForAccounts(walletsList))
+    const accounts = await dispatch(setProfilesForAccounts(walletsList))
 
     accounts.forEach((account) =>
       dispatch(PersistAccountActions.accountUpdate(account)),

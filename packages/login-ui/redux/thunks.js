@@ -23,6 +23,10 @@ import * as NetworkThunks from '@chronobank/login/redux/network/thunks'
 import * as SessionThunks from '@chronobank/core/redux/session/thunks'
 import { modalsOpen, modalsClose } from '@chronobank/core/redux/modals/actions'
 import * as PersistAccountActions from '@chronobank/core/redux/persistAccount/actions'
+import {
+  createAccount,
+  createHWAccount,
+} from '@chronobank/core/redux/persistAccount/thunks'
 import PublicBackendProvider from '@chronobank/login/network/PublicBackendProvider'
 import { SignerMemoryModel } from '@chronobank/core/models'
 import {
@@ -125,6 +129,8 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
       ))
 
       dispatch(watchInitUserMonitor())
+
+      dispatch(SessionThunks.login(selectedAccount))
     }
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -173,7 +179,7 @@ export const onSubmitImportAccount = ({ name, password, mnemonic = '', privateKe
   async (dispatch) => {
 
     try {
-      const wallet = await dispatch(PersistAccountActions.createAccount({
+      const wallet = await dispatch(createAccount({
         name,
         password,
         mnemonic,
@@ -211,7 +217,7 @@ export const onSubmitCreateHWAccountPage = (walletName) =>
     } = state.get(DUCK_NETWORK)
 
     try {
-      const wallet = await dispatch(PersistAccountActions.createHWAccount({
+      const wallet = await dispatch(createHWAccount({
         name: walletName,
         pupblicKey: newAccountPrivateKey,
         numberOfAccounts: 0,
