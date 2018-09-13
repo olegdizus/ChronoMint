@@ -8,24 +8,22 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import Button from 'components/common/ui/Button/Button'
-import { changeMomentLocale } from 'redux/ui/actions'
+import { setLocale } from 'redux/i18n/actions'
 import classnames from 'classnames'
-import { DUCK_UI } from 'redux/ui/constants'
+import { DUCK_I18N } from 'redux/i18n/constants'
 
 import styles from './LocaleDropDown.scss'
 
 function mapStateToProps (state) {
   return {
-    locale: state.get(DUCK_UI).locale,
+    locale: state.get(DUCK_I18N).locale,
     translations: state.get('i18n').translations,
   }
 }
 
 function mapDispatchToProps (dispatch) {
   return {
-    onChangeLocale: (locale) => {
-      dispatch(changeMomentLocale(locale))
-    },
+    onChangeLocale: (locale) => dispatch(setLocale(locale)),
   }
 }
 
@@ -66,7 +64,7 @@ export default class LocaleDropDown extends PureComponent {
     })
   }
 
-  handleChangeLocale = (locale) => {
+  handleChangeLocale = (locale) => () => {
     this.props.onChangeLocale(locale)
     this.handleRequestClose()
   }
@@ -104,7 +102,7 @@ export default class LocaleDropDown extends PureComponent {
                   LocaleDropDownItem: true,
                   LocaleDropDownItemActive: item.name === locale,
                 })}
-                onClick={() => this.handleChangeLocale(item.name)}
+                onClick={this.handleChangeLocale(item.name)}
               >
                 {item.title}
               </li>

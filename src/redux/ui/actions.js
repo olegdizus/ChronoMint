@@ -3,19 +3,8 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import moment from 'moment'
-import { setLocale } from 'react-redux-i18n'
 import ipfs from '@chronobank/core/utils/IPFS'
-import { CHANGE_WALLET_VIEW, UI_SET_LOCALE } from './constants'
-
-export const changeMomentLocale = (locale) => (dispatch) => {
-  moment.locale(locale)
-  dispatch({
-    type: UI_SET_LOCALE,
-    locale,
-  })
-  dispatch(setLocale(locale))
-}
+import { CHANGE_WALLET_VIEW } from './constants'
 
 export const download = (hash, name) => async () => {
   // do nt limit a time to download

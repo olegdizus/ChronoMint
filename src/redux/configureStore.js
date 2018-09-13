@@ -4,155 +4,86 @@
  */
 
 import Immutable from 'immutable'
-import { SESSION_DESTROY } from '@chronobank/core/redux/session/constants'
 import { combineReducers } from 'redux-immutable'
 import { applyMiddleware, compose, createStore } from 'redux'
-import { createLogger } from 'redux-logger'
 import { composeWithDevTools } from 'redux-devtools-extension'
+import { persistReducer, PersistConfig } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 import { persistStore } from 'redux-persist-immutable'
 import { reducer as formReducer } from 'redux-form/immutable'
-import { loadI18n } from 'redux/i18n/actions'
-import { I18n, i18nReducer, loadTranslations, setLocale } from 'react-redux-i18n'
-import moment from 'moment'
+import { i18nReducer, syncTranslationWithStore, setLocale } from 'react-redux-i18n'
 import thunk from 'redux-thunk'
 import coreReducers from '@chronobank/core/redux/ducks'
 import loginReducers from '@chronobank/login/redux/ducks'
-import { DUCK_I18N } from 'redux/i18n/constants'
 import { DUCK_PERSIST_ACCOUNT } from '@chronobank/core/redux/persistAccount/constants'
 import { DUCK_WALLETS } from '@chronobank/core/redux/wallets/constants'
-import { DUCK_UI } from 'redux/ui/constants'
 import transformer from '@chronobank/core/redux/serialize'
 import ducks from './ducks'
 import routingReducer from './routing'
 import createHistory, { historyMiddleware } from './browserHistoryStore'
-import translations from '../i18n'
+import { loadI18n } from './i18n/actions'
 
-// eslint-disable-next-line no-unused-vars
-let i18nJson // declaration of a global var for the i18n object for a standalone version
+/**
+ * Empty initial state
+ */
+const initialState = new Immutable.Map()
 
-const configureStore = () => {
-  const initialState = new Immutable.Map()
-
-  const appReducer = combineReducers({
-    ...coreReducers,
-    ...ducks,
-    ...loginReducers,
-    form: formReducer,
-    i18n: i18nReducer,
-    routing: routingReducer,
-  })
-
-  const rootReducer = (state, action) => {
-
-    if (action.type === SESSION_DESTROY) {
-      const i18nState = state.get(DUCK_I18N)
-      const persistAccount = state.get(DUCK_PERSIST_ACCOUNT)
-      const wallets = state.get(DUCK_WALLETS)
-      const ui = state.get(DUCK_UI)
-      console.log('####################### ui')
-      console.log(ui)
-      state = new Immutable.Map()
-      state = state
-        .set(DUCK_I18N, i18nState)
-        .set(DUCK_PERSIST_ACCOUNT, persistAccount)
-        .set(DUCK_WALLETS, wallets)
-        .set(DUCK_UI, ui)
-    }
-    return appReducer(state, action)
-  }
-
-  const isDevelopmentEnv = process.env.NODE_ENV === 'development'
-  const composeEnhancers = isDevelopmentEnv
-    ? composeWithDevTools({ realtime: true })
-    : compose
-  const middleware = [
-    thunk,
-    historyMiddleware,
-  ]
-
-  if (isDevelopmentEnv) {
-    // Highest priority, IGNORED_ACTIONS and DOMAINS are ignored by WHITE_LIST
-    const WHITE_LIST = []
-    // The following actions will be ignored if not whitelisted but presents in DOMAINS
-    // So, we can enable whole domain, but still exclude aome actions from domain
-    const IGNORED_ACTIONS = [
-      'market/ADD_TOKEN',
-      'market/UPDATE_LAST_MARKET',
-      'market/UPDATE_RATES',
-      'tokens/fetched',
-      'tokens/fetching',
-      'tokens/updateLatestBlock',
-      'wallet/updateBalance',
-    ]
-    // All actions like network/* (starts with network)
-    const DOMAINS = [
-      // 'AssetsManager/',
-      // '@@router/',
-      // 'MODALS/',
-      // 'SIDES/'
-      // 'PROFILE/',
-      // 'UI/',
-    ]
-    const logger = createLogger({
-      collapsed: true,
-      // predicate: (getState, action) => {
-      //   if (!action.type) {
-      //     // eslint-disable-next-line no-console
-      //     console.error('%c action has no type field!', 'background: red; color: #fff', action)
-      //     return true
-      //   }
-      //   return WHITE_LIST.includes(action.type) || (
-      //     !IGNORED_ACTIONS.includes(action.type) &&
-      //     DOMAINS.some((domain) => {
-      //       return action.type.startsWith(domain)
-      //     })
-      //   )
-      // },
-    })
-    // Note: logger must be the last middleware in chain, otherwise it will log thunk and promise, not actual actions
-    middleware.push(logger)
-  }
-
-  // noinspection JSUnresolvedVariable,JSUnresolvedFunction
-  const createStoreWithMiddleware = composeEnhancers(
-    applyMiddleware(
-      ...middleware,
-    ),
-  )(createStore)
-
-  return createStoreWithMiddleware(
-    rootReducer,
-    initialState,
-  )
+/**
+ * Config for persisting i18n locale
+ */
+const i18nPersistConfig: PersistConfig = {
+  key: 'i18n',
+  storage,
+  whitelist: ['locale'],
 }
 
-const store = configureStore()
+/**
+ * Reducer combined from all app reducers
+ */
+const rootReducer = combineReducers({
+  ...coreReducers,
+  ...ducks,
+  ...loginReducers,
+  form: formReducer,
+  i18n: persistReducer(i18nPersistConfig, i18nReducer),
+  routing: routingReducer,
+})
 
-const persistorConfig = {
+const isDevelopmentEnv = process.env.NODE_ENV === 'development'
+
+const composeEnhancers = isDevelopmentEnv
+  ? composeWithDevTools({ realtime: true })
+  : compose
+
+const middleware = [
+  thunk,
+  historyMiddleware,
+]
+
+const createStoreWithMiddleware = composeEnhancers(
+  applyMiddleware(
+    ...middleware,
+  ),
+)(createStore)
+
+const persistorConfig: PersistConfig = {
   key: 'root',
-  whitelist: [DUCK_PERSIST_ACCOUNT, DUCK_WALLETS, DUCK_UI],
+  storage,
+  whitelist: [DUCK_PERSIST_ACCOUNT, DUCK_WALLETS, 'i18n'],
   transforms: [transformer()],
 }
 
-// eslint-disable-next-line no-underscore-dangle
-store.__persistor = persistStore(store, persistorConfig)
-export { store }
-console.log(store.__persistor)
+export const store = createStoreWithMiddleware(
+  persistReducer(persistorConfig, rootReducer),
+  initialState,
+)
+
+export const persistor = persistStore(store)
 
 export const history = createHistory(store)
 
-// syncTranslationWithStore(store) relaced with manual configuration in the next 6 lines
-I18n.setTranslationsGetter(() => store.getState().get(DUCK_I18N).translations)
-I18n.setLocaleGetter(() => store.getState().get(DUCK_I18N).locale)
+export default { store, persistor, history }
+syncTranslationWithStore(store)
 
-const locale = store.getState().get(DUCK_UI).locale
-console.log('>>>>>>>>>>>>> configureStore locale from store:', locale)
-// set moment locale
-moment.locale(locale)
-
-store.dispatch(loadTranslations(translations))
-store.dispatch(setLocale(locale))
-
-// load i18n from the public site
-store.dispatch(loadI18n(locale))
+store.dispatch(loadI18n('en'))
 /** <<< i18n END */

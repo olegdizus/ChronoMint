@@ -6,22 +6,18 @@
 import { REHYDRATE } from 'redux-persist'
 import {
   CHANGE_WALLET_VIEW,
-  UI_SET_LOCALE,
 } from './constants'
 
 const initialState = {
   isCompactWalletView: false,
-  locale: 'en',
   rehydrated: false,
 }
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case REHYDRATE: {
-      console.log('UI REHYDRATE action', action)
       return {
         ...state,
-        locale: action.locale || 'en',
         isCompactWalletView: action.isCompactWalletView || false,
         rehydrated: true,
       }
@@ -30,11 +26,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isCompactWalletView: !state.isCompactWalletView,
-      }
-    case UI_SET_LOCALE:
-      return {
-        ...state,
-        locale: action.locale,
       }
     default:
       return state
