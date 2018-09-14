@@ -36,7 +36,6 @@ class CreateAccountPage extends PureComponent {
   }
 
   static propTypes = {
-    navigateToSelectWallet: PropTypes.func,
     navigateToSelectImportMethod: PropTypes.func,
     onSubmitCreateAccountImportMnemonic: PropTypes.func,
   }
@@ -52,12 +51,37 @@ class CreateAccountPage extends PureComponent {
     }
   }
 
+  handleCreateAccount = ({ walletName, password }) => {
+    this.setState({
+      accountName: walletName,
+      password,
+      page: CreateAccountPage.PAGES.GENERATE_MNEMONIC_FORM,
+    })
+  }
+
+  handleProceedGenerateMnemonic = () => {
+    this.setState({
+      page: CreateAccountPage.PAGES.CONFIRM_MNEMONIC_FORM,
+    })
+  }
+
+  handleSubmitConfirmMnemonic = () => {
+    const { onSubmitCreateAccountImportMnemonic } = this.props
+    const { accountName, password, mnemonic } = this.state
+
+    onSubmitCreateAccountImportMnemonic(accountName, password, mnemonic)
+
+    this.setState({
+      page: CreateAccountPage.PAGES.DOWNLOAD_WALLET_PAGE,
+    })
+  }
+
   getCurrentPage () {
     switch(this.state.page){
       case CreateAccountPage.PAGES.CREATE_ACCOUNT_FORM:
         return (
           <CreateAccountContainer
-            onSubmit={this.onSubmitCreateAccount.bind(this)}
+            onSubmit={this.handleCreateAccount}
           />
         )
 
@@ -65,7 +89,7 @@ class CreateAccountPage extends PureComponent {
         return (
           <GenerateMnemonicContainer
             mnemonic={this.state.mnemonic}
-            onProceed={this.onProceedGenerateMnemonic.bind(this)}
+            onProceed={this.handleProceedGenerateMnemonic}
           />
         )
 
@@ -73,8 +97,8 @@ class CreateAccountPage extends PureComponent {
         return (
           <ConfirmMnemonicContainer
             mnemonic={this.state.mnemonic}
-            onSubmit={this.onSubmitConfirmMnemonic.bind(this)}
-            previousPage={this.previousPage.bind(this)}
+            onSubmit={this.handleSubmitConfirmMnemonic}
+            previousPage={this.previousPage}
           />
         )
 
@@ -86,39 +110,14 @@ class CreateAccountPage extends PureComponent {
       default:
         return (
           <CreateAccountContainer
-            onSubmit={this.onSubmitCreateAccount.bind(this)}
+            onSubmit={this.handleCreateAccount}
           />
         )
 
     }
   }
 
-  onSubmitCreateAccount ({ walletName, password }) {
-    this.setState({
-      accountName: walletName,
-      password,
-      page: CreateAccountPage.PAGES.GENERATE_MNEMONIC_FORM,
-    })
-  }
-
-  onProceedGenerateMnemonic () {
-    this.setState({
-      page: CreateAccountPage.PAGES.CONFIRM_MNEMONIC_FORM,
-    })
-  }
-
-  onSubmitConfirmMnemonic () {
-    const { onSubmitCreateAccountImportMnemonic } = this.props
-    const { accountName, password, mnemonic } = this.state
-
-    onSubmitCreateAccountImportMnemonic(accountName, password, mnemonic)
-
-    this.setState({
-      page: CreateAccountPage.PAGES.DOWNLOAD_WALLET_PAGE,
-    })
-  }
-
-  previousPage () {
+  previousPage = () => {
     if (this.state.page === CreateAccountPage.PAGES.MNEMONIC_FORM){
       this.props.navigateToSelectImportMethod()
     } else {
@@ -127,7 +126,6 @@ class CreateAccountPage extends PureComponent {
   }
 
   render () {
-
     return this.getCurrentPage()
   }
 }
