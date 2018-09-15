@@ -4,8 +4,8 @@
  */
 
 import BigNumber from 'bignumber.js'
-import Immutable from 'immutable'
-import ipfs from '../utils/IPFS'
+import ipfs from '@chronobank/core/utils/IPFS'
+import { List } from 'immutable'
 import PollNoticeModel from '../models/notices/PollNoticeModel'
 import PollModel from '../models/PollModel'
 import PollDetailsModel from '../models/PollDetailsModel'
@@ -175,7 +175,7 @@ export default class VotingManagerDAO extends AbstractContractDAO {
               shareholdersCount: new BigNumber(shareholdersCount),
               isFetched: true,
               isFetching: false,
-              files: new Immutable.List((pollFiles && pollFiles.links || [])
+              files: new List((pollFiles && pollFiles.links || [])
                 .map((item) => FileModel.createFromLink(item))),
             })
 
