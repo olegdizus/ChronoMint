@@ -19,7 +19,7 @@ import { SubmissionError } from 'redux-form'
 import * as ProfileThunks from '@chronobank/core/redux/profile/thunks'
 import { getAddress } from '@chronobank/core/redux/persistAccount/utils'
 
-function mapDispatchToProps (dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     getUserInfo: (addresses: string[]) => dispatch(ProfileThunks.getUserInfo(addresses)),
     navigateBack: () => dispatch(navigateBack()),
@@ -28,7 +28,8 @@ function mapDispatchToProps (dispatch) {
   }
 }
 
-class WalletImportPage extends PureComponent {
+@connect(null, mapDispatchToProps)
+export default class WalletImportPage extends PureComponent {
   static PAGES = {
     WALLET_UPLOAD_FORM: 1,
     ACCOUNT_NAME_FORM: 2,
@@ -50,35 +51,35 @@ class WalletImportPage extends PureComponent {
     }
   }
 
-  getCurrentPage () {
+  getCurrentPage = () => {
     switch(this.state.page){
       case WalletImportPage.PAGES.WALLET_UPLOAD_FORM:
         return (
           <LoginWithWalletContainer
-            previousPage={this.previousPage.bind(this)}
-            onSubmit={this.onSubmitWallet.bind(this)}
+            previousPage={this.previousPage}
+            onSubmit={this.onSubmitWallet}
           />
         )
 
       case WalletImportPage.PAGES.ACCOUNT_NAME_FORM:
         return (
           <AccountNameContainer
-            previousPage={this.previousPage.bind(this)}
-            onSubmit={this.onSubmitAccountName.bind(this)}
+            previousPage={this.previousPage}
+            onSubmit={this.onSubmitAccountName}
           />
         )
 
       default:
         return (
           <LoginWithWalletContainer
-            previousPage={this.previousPage.bind(this)}
-            onSubmit={this.onSubmitWallet.bind(this)}
+            previousPage={this.previousPage}
+            onSubmit={this.onSubmitWallet}
           />
         )
     }
   }
 
-  convertWalletFileToJSON (walletString) {
+  convertWalletFileToJSON = (walletString) => {
     let restoredWalletJSON
 
     try {
@@ -99,7 +100,7 @@ class WalletImportPage extends PureComponent {
     return restoredWalletJSON
   }
 
-  async onSubmitWallet (walletString) {
+  onSubmitWallet = async (walletString) => {
     const walletJSON = this.convertWalletFileToJSON(walletString)
     this.setState({ walletJSON })
 
@@ -128,14 +129,14 @@ class WalletImportPage extends PureComponent {
     }
   }
 
-  async onSubmitAccountName (accountName) {
+  onSubmitAccountName = async (accountName) => {
     const { onCreateWalletFromJSON, navigateToSelectWallet } = this.props
 
     onCreateWalletFromJSON(accountName, this.state.walletJSON, null)
     navigateToSelectWallet()
   }
 
-  previousPage () {
+  previousPage = () => {
     if (this.state.page === WalletImportPage.PAGES.WALLET_UPLOAD_FORM){
       this.props.navigateBack()
     } else {
@@ -144,9 +145,6 @@ class WalletImportPage extends PureComponent {
   }
 
   render () {
-
     return this.getCurrentPage()
   }
 }
-
-export default connect(null, mapDispatchToProps)(WalletImportPage)
