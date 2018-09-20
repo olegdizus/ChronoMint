@@ -7,7 +7,7 @@ import {
   BLOCKCHAIN_BITCOIN,
   BLOCKCHAIN_BITCOIN_CASH,
   BLOCKCHAIN_LITECOIN,
-} from '@chronobank/login/network/constants'
+} from '@chronobank/core/dao/constants'
 
 export default {
   [BLOCKCHAIN_BITCOIN]: {

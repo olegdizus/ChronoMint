@@ -13,12 +13,10 @@ import {
 import {
   navigateToSelectImportMethod,
 } from '@chronobank/login-ui/redux/navigation'
-import {
-  CreateAccountContainer,
-  GenerateWalletContainer,
-  GenerateMnemonicContainer,
-  ConfirmMnemonicContainer,
-} from '@chronobank/login-ui/components'
+import CreateAccountContainer from '@chronobank/login-ui/components/CreateAccount/CreateAccountContainer'
+import GenerateWalletContainer from '@chronobank/login-ui/components/GenerateWallet/GenerateWalletContainer'
+import GenerateMnemonicContainer from '@chronobank/login-ui/components/GenerateMnemonic/GenerateMnemonicContainer'
+import ConfirmMnemonicContainer from '@chronobank/login-ui/components/ConfirmMnemonic/ConfirmMnemonicContainer'
 
 const mapDispatchToProps = (dispatch) => {
   return {

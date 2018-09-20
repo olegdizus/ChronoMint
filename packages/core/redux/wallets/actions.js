@@ -42,10 +42,7 @@ import { getPersistAccount, getEthereumSigner } from '../persistAccount/selector
 import { getBitcoinCashSigner, getBitcoinSigner, getLitecoinSigner } from '../bitcoin/selectors'
 import { getNemSigner } from '../nem/selectors'
 import { getWavesSigner } from '../waves/selectors'
-
-const isOwner = (wallet, account) => {
-  return wallet.owners.includes(account)
-}
+import { isOwner } from './utils'
 
 export const get2FAEncodedKey = (callback) => () => {
   return ethereumProvider.get2FAEncodedKey(callback)

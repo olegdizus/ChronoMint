@@ -10,6 +10,8 @@ import {
   stopSubmit,
   SubmissionError,
 } from 'redux-form'
+import { MOCK_PRIVATE_KEY } from '@chronobank/core/services/signers/BitcoinLedgerDeviceMock'
+import { selectCurrentNetwork } from '@chronobank/nodes/redux/selectors'
 import {
   WALLET_TYPE_MEMORY,
   WALLET_TYPE_TREZOR,
@@ -17,21 +19,25 @@ import {
   WALLET_TYPE_LEDGER,
   WALLET_TYPE_LEDGER_MOCK,
 } from '@chronobank/core/models/constants/AccountEntryModel'
+import {
+  BLOCKCHAIN_BITCOIN_CASH,
+  BLOCKCHAIN_BITCOIN_GOLD,
+  BLOCKCHAIN_BITCOIN,
+  BLOCKCHAIN_LITECOIN,
+  BLOCKCHAIN_NEM,
+  BLOCKCHAIN_WAVES,
+} from '@chronobank/core/dao/constants'
 import { AccountEntryModel } from '@chronobank/core/models/wallet/persistAccount'
 import { getEthereumSigner } from '@chronobank/core/redux/persistAccount/selectors'
-import * as NetworkActions from '@chronobank/login/redux/network/actions'
-import {
-  DUCK_NETWORK,
-} from '@chronobank/login/redux/network/constants'
+import privateKeyProvider from '@chronobank/login/network/privateKeyProvider'
+import setup from '@chronobank/login/network/EngineUtils'
 import {
   DUCK_PERSIST_ACCOUNT,
 } from '@chronobank/core/redux/persistAccount/constants'
-import * as NetworkThunks from '@chronobank/login/redux/network/thunks'
 import * as SessionThunks from '@chronobank/core/redux/session/thunks'
 import { modalsOpen, modalsClose } from '@chronobank/core/redux/modals/actions'
 import * as PersistAccountActions from '@chronobank/core/redux/persistAccount/actions'
 import * as DeviceActions from '@chronobank/core/redux/device/actions'
-// import PublicBackendProvider from '@chronobank/login/network/PublicBackendProvider'
 import { subscribeNews } from '@chronobank/nodes/httpNodes/api/backend_chronobank'
 import {
   createAccountEntry,
@@ -44,15 +50,6 @@ import {
   FORM_FOOTER_EMAIL_SUBSCRIPTION,
 } from './constants'
 import userMonitorService from './userMonitorService'
-
-/*
- * Thunk dispatched by "" screen.
- * TODO: to add description
- */
-export const navigateToCreateAccountFromHW = (address) => (dispatch) => {
-  dispatch(NetworkActions.networkSetAccounts(address))
-  dispatch(LoginUINavActions.navigateToCreateHWAccount())
-}
 
 /*
  * Thunk dispatched by "" screen.
@@ -76,7 +73,6 @@ export const onSubmitSubscribeNewsletter = (email) => async (dispatch) => {
  */
 // eslint-disable-next-line complexity
 export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
-  dispatch(NetworkActions.networkSetLoginSubmitting())
 
   const state = getState()
   const { selectedWallet } = state.get(DUCK_PERSIST_ACCOUNT)
@@ -91,22 +87,30 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
         const signer = getEthereumSigner(getState())
         await dispatch(SessionThunks.getProfileSignature(signer, accountWallet.encrypted[0].path))
 
-        dispatch(NetworkActions.selectAccount(accountWallet.address))
+        //////////////////////////////////////////////////////
+        //// @todo remove after providers/engine refactoring
+        const selected = selectCurrentNetwork(state)
+        const oldFormatProviderSettings = {
+          network: {
+            id: selected.networkId,
+            protocol: 'https',
+            name: selected.networkTitle,
+            "Bitcoin": selected.blockchain[BLOCKCHAIN_BITCOIN].bcNetworkId,
+            "Bitcoin Cash": selected.blockchain[BLOCKCHAIN_BITCOIN_CASH].bcNetworkId,
+            "Bitcoin Gold": selected.blockchain[BLOCKCHAIN_BITCOIN_GOLD].bcNetworkId,
+            "Litecoin": selected.blockchain[BLOCKCHAIN_LITECOIN].bcNetworkId,
+            "NEM": selected.blockchain[BLOCKCHAIN_NEM].bcNetworkId,
+            "WAVES": selected.blockchain[BLOCKCHAIN_WAVES].bcNetworkId,
+          },
+          url: selected.primaryNode.host,
+        }
+        const provider = privateKeyProvider.getPrivateKeyProvider(wallet.privateKey.slice(2, 66), oldFormatProviderSettings)
+        await setup(provider)
+        //////////////////////////////////////////////////////
 
-        const {
-          selectedAccount,
-          selectedProviderId,
-          selectedNetworkId,
-        } = getState().get(DUCK_NETWORK)
-        dispatch(NetworkActions.clearErrors())
-
-        dispatch(SessionThunks.createNetworkSession(
-          selectedAccount,
-          selectedProviderId,
-          selectedNetworkId,
-        ))
-
-        await dispatch(SessionThunks.login(selectedAccount))
+        // dispatch(PersistAccountActions.accountSelect(wallet))
+        dispatch(SessionThunks.createNetworkSession(accountWallet.address))
+        dispatch(LoginUINavActions.navigateToRoot()) // TODO: need to check lastURL
       } catch (e) {
         //eslint-disable-next-line
         console.warn('Memory type error: ', e)
@@ -124,24 +128,30 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
         const signer = getEthereumSigner(getState())
         await dispatch(SessionThunks.getProfileSignature(signer, wallet.entry.encrypted[0].path))
 
-        dispatch(NetworkActions.selectAccount(wallet.entry.encrypted[0].address))
-        dispatch(NetworkActions.loading())
-        dispatch(NetworkActions.clearErrors())
+        //////////////////////////////////////////////////////
+        //// @todo remove after providers/engine refactoring
+        const selected = selectCurrentNetwork(state)
+        const oldFormatProviderSettings = {
+          network: {
+            id: selected.networkId,
+            protocol: 'https',
+            name: selected.networkTitle,
+            "Bitcoin": selected.blockchain[BLOCKCHAIN_BITCOIN].bcNetworkId,
+            "Bitcoin Cash": selected.blockchain[BLOCKCHAIN_BITCOIN_CASH].bcNetworkId,
+            "Bitcoin Gold": selected.blockchain[BLOCKCHAIN_BITCOIN_GOLD].bcNetworkId,
+            "Litecoin": selected.blockchain[BLOCKCHAIN_LITECOIN].bcNetworkId,
+            "NEM": selected.blockchain[BLOCKCHAIN_NEM].bcNetworkId,
+            "WAVES": selected.blockchain[BLOCKCHAIN_WAVES].bcNetworkId,
+          },
+          url: selected.primaryNode.host,
+        }
+        const provider = privateKeyProvider.getPrivateKeyProvider(`${MOCK_PRIVATE_KEY}`, oldFormatProviderSettings)
+        await setup(provider)
+        //////////////////////////////////////////////////////
 
-        const {
-          selectedAccount,
-          selectedProviderId,
-          selectedNetworkId,
-        } = getState().get(DUCK_NETWORK)
-        dispatch(NetworkActions.clearErrors())
-
-        dispatch(SessionThunks.createNetworkSession(
-          selectedAccount,
-          selectedProviderId,
-          selectedNetworkId,
-        ))
-        await dispatch(SessionThunks.login(selectedAccount))
-
+        // dispatch(PersistAccountActions.accountSelect(wallet))
+        dispatch(SessionThunks.createNetworkSession(accountWallet.address))
+        dispatch(LoginUINavActions.navigateToRoot()) // TODO: need to check lastURL
       } catch (e) {
         //eslint-disable-next-line
         console.warn('Device type error: ', e)
@@ -207,24 +217,17 @@ export const onSubmitImportAccount = ({ name, password, mnemonic = '', privateKe
  * TODO: to rework it
  */
 export const onSubmitCreateHWAccountPage = (walletName) =>
-  async (dispatch, getState) => {
+  async (dispatch) => {
     const validateName = dispatch(PersistAccountActions.validateAccountName(walletName))
 
     if (!validateName) {
       throw new SubmissionError({ walletName: 'Wrong wallet name' })
     }
 
-    dispatch(NetworkActions.setAccountCredentials(walletName, walletName))
-
-    const state = getState()
-    const {
-      newAccountPrivateKey,
-    } = state.get(DUCK_NETWORK)
-
     try {
       const wallet = await dispatch(PersistAccountActions.createHWAccount({
         name: walletName,
-        pupblicKey: newAccountPrivateKey,
+        pupblicKey: null, // TODO: used unexist variable, need to verify
         numberOfAccounts: 0,
       }))
 
@@ -283,10 +286,6 @@ export const onCreateWalletFromDevice = (name, device, profile, walletType) => (
  */
 export const initLoginPage = () =>
   (dispatch, getState) => {
-    dispatch(NetworkThunks.resetAllLoginFlags())
-    dispatch(NetworkActions.networkResetLoginSubmitting())
-    dispatch(NetworkThunks.initAccountsSignature())
-
     const state = getState()
     const {
       selectedWallet,
@@ -311,7 +310,6 @@ export const initLoginPage = () =>
  * TODO: to move FORM_LOGIN_PAGE* constants from actions.js
  */
 export const onSubmitResetAccountPasswordSuccess = () => (dispatch) => {
-  dispatch(NetworkActions.networkResetAccountRecoveryMode())
   dispatch(LoginUINavActions.navigateToLoginPage())
   dispatch(change(
     FORM_LOGIN_PAGE,
@@ -342,7 +340,6 @@ export const onSubmitSubscribeNewsletterFail = (errors, submitErrors) =>
  */
 export const onSubmitLoginFormFail = (errors, submitErrors) => (dispatch) => {
   dispatch(stopSubmit(FORM_LOGIN_PAGE, submitErrors && submitErrors.errors))
-  dispatch(NetworkActions.networkResetLoginSubmitting())
 }
 
 export const startUserMonitorAndCloseModals = () => (dispatch) => {
