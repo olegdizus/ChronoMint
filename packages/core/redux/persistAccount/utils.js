@@ -21,7 +21,7 @@ export const getAddress = (address, /*hexFormat = false*/) => {
 }
 
 export const getAccountAddress = (account: AccountEntryModel, hexFormat = false) => {
-  return account && account.encrypted && account.encrypted[0] && getAddress(account.encrypted[0].address, hexFormat) || ''
+  return account && account.encrypted && account.encrypted[0] && getAddress(account.encrypted[0].address) || ''
 }
 
 export const getWalletsListAddresses = (walletsList = []) => {

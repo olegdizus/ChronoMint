@@ -54,18 +54,18 @@ export default class SendTokens extends PureComponent {
     this.props.mainTransfer(wallet, token, value, recipient, feeMultiplier, advancedModeParams)
   }
 
+  getInitialValues = (token) => ({
+    feeMultiplier: 1,
+    symbol: token.symbol(),
+    mode: MODE_SIMPLE,
+  })
+
   render () {
     const { token } = this.props
 
-    const initialValues = {
-      feeMultiplier: 1,
-      symbol: token.symbol(),
-      mode: MODE_SIMPLE,
-    }
-
     return (
       <Form
-        initialValues={initialValues}
+        initialValues={this.getInitialValues()}
         onSubmit={this.handleSubmit}
         token={this.props.token}
         wallet={this.props.wallet}
