@@ -14,7 +14,7 @@ export const selectDuckWallets = (state) => state.get(DUCK_WALLETS)
 
 export const selectWalletByBlockchain = (blockchain) => createSelector(
   selectDuckWallets,
-  (wallets) => wallets.find((wallet) => wallet.blockchain === blockchain)
+  (wallets) => Object.values(wallets.list).find((wallet) => wallet.blockchain === blockchain)
 )
 
 export const selectWalletAddressByBlockchain = (blockchain) => createSelector(
