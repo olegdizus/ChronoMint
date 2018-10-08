@@ -75,7 +75,8 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
         const signer = getEthereumSigner(getState())
         await dispatch(SessionThunks.getProfileSignature(signer, accountWallet.encrypted[0].path))
 
-        dispatch(SessionThunks.createNetworkSession(accountWallet.address))
+        await dispatch(SessionThunks.createNetworkSession(accountWallet.address))
+        await dispatch(SessionThunks.login(accountWallet.address))
         dispatch(LoginUINavActions.navigateToRoot())
       } catch (e) {
         //eslint-disable-next-line
