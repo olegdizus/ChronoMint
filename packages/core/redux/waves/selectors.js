@@ -5,13 +5,14 @@
 
 import * as WavesApi from '@waves/waves-api'
 import { BLOCKCHAIN_WAVES } from '@chronobank/login/network/constants'
+import { selectBlockchainNetworkId } from '@chronobank/nodes/redux/selectors'
 import { createSelector } from 'reselect'
 import { DUCK_WAVES } from './constants'
 import MetamaskPlugin from '../../services/signers/MetamaskPlugin'
 import WavesMemoryDevice from '../../services/signers/WavesMemoryDevice'
 import WavesLedgerDevice from '../../services/signers/WavesLedgerDevice'
 import WavesLedgerDeviceMock from '../../services/signers/WavesLedgerDeviceMock'
-import { getPersistAccount, getSelectedNetwork } from '../persistAccount/selectors'
+import { getPersistAccount } from '../persistAccount/selectors'
 import {
   WALLET_TYPE_MEMORY,
   WALLET_TYPE_METAMASK,
@@ -38,8 +39,8 @@ export const pendingEntrySelector = (address, key) => createSelector(
 
 export const getWavesSigner = (state) => {
   const account = getPersistAccount(state)
-  const networkData = getSelectedNetwork()(state)
-  const network = WavesApi[networkData[BLOCKCHAIN_WAVES]]
+  const networkData = selectBlockchainNetworkId(BLOCKCHAIN_WAVES)(state)
+  const network = WavesApi[networkData]
   switch (account.decryptedWallet.entry.encrypted[0].type) {
     case WALLET_TYPE_MEMORY: {
       const privateKey = account.decryptedWallet.privateKey.slice(2, 66)

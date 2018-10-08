@@ -4,12 +4,12 @@
  */
 import { Address, Transaction, Unit } from 'dashcore-lib'
 import BigNumber from 'bignumber.js'
+import { selectCurrentNetwork } from '@chronobank/nodes/redux/selectors'
 
 import { TransferNoticeModel, TxExecModel } from '../../models'
 import { describePendingBitcoinTx } from '../../describers'
 
 import { getToken } from '../tokens/selectors'
-import { getSelectedNetwork } from '../persistAccount/selectors'
 
 import { modalsOpen } from '../modals/actions'
 import { notify } from '../notifier/actions'
@@ -26,7 +26,7 @@ export const executeDashTransaction = ({ tx, options }) => async (dispatch, getS
   try {
     const state = getState()
     const token = getToken(options.symbol)(state)
-    const network = getSelectedNetwork()(state)
+    const network = selectCurrentNetwork(state)
     const blockchain = token.blockchain()
 
     const transaction = await getUnsignedTransaction(dispatch, tx.from, tx.to, tx.value.toNumber(), blockchain)

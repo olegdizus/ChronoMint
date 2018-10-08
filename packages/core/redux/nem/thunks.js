@@ -4,10 +4,10 @@
  */
 
 import { nemProvider } from '@chronobank/login/network/NemProvider'
+import { selectCurrentNetwork } from '@chronobank/nodes/redux/selectors'
 import { modalsOpen } from '../../redux/modals/actions'
 import { ErrorNoticeModel, TransferNoticeModel } from '../../models'
 import { nemPendingSelector, pendingEntrySelector, getNemSigner } from './selectors'
-import { getSelectedNetwork } from '../persistAccount/selectors'
 import { describePendingNemTx } from '../../describers'
 import { getAccount } from '../session/selectors/models'
 import * as NemActions from './actions'
@@ -79,7 +79,7 @@ export const executeNemTransaction = ({ tx, options }) => async (dispatch) => {
 const prepareTransaction = ({ tx }) => async (dispatch, getState) => {
   dispatch(NemActions.nemPrepareTx({ tx }))
 
-  const network = getSelectedNetwork()(getState())
+  const network = selectCurrentNetwork(getState())
   return tx.mosaicDefinition
     ? NemUtils.describeMosaicTransaction(tx, network)
     : NemUtils.describeXemTransaction(tx, network)

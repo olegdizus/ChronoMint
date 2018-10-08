@@ -18,7 +18,7 @@ export const getAddressUTXOS = (address: string, blockchain: string) => (dispatc
   }
 
   const state = getState()
-  const { network } = selectCurrentNetwork(state)
+  const network = selectCurrentNetwork(state)
   const netType = network[blockchain]
 
   dispatch(BitcoinActions.bitcoinHttpGetUtxos())

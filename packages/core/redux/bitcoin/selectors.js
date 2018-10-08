@@ -5,8 +5,9 @@
 
 import { createSelector } from 'reselect'
 import bitcoin from 'bitcoinjs-lib'
+import { selectBlockchainNetworkId } from '@chronobank/nodes/redux/selectors'
 import { DUCK_BITCOIN } from './constants'
-import { getPersistAccount, getSelectedNetwork } from '../persistAccount/selectors'
+import { getPersistAccount } from '../persistAccount/selectors'
 import {
   WALLET_TYPE_TREZOR,
   WALLET_TYPE_TREZOR_MOCK,
@@ -49,8 +50,8 @@ export const pendingEntrySelector = (address, key, blockchain) => createSelector
 
 export const getBitcoinSigner = (state) => {
   const account = getPersistAccount(state)
-  const networkData = getSelectedNetwork()(state)
-  const network = bitcoin.networks[networkData[BLOCKCHAIN_BITCOIN]]
+  const networkData = selectBlockchainNetworkId(BLOCKCHAIN_BITCOIN)(state)
+  const network = bitcoin.networks[networkData]
 
   switch (account.decryptedWallet.entry.encrypted[0].type) {
     case WALLET_TYPE_MEMORY: {
@@ -73,8 +74,8 @@ export const getBitcoinSigner = (state) => {
 
 export const getBitcoinCashSigner = (state) => {
   const account = getPersistAccount(state)
-  const networkData = getSelectedNetwork()(state)
-  const network = bitcoin.networks[networkData[BLOCKCHAIN_BITCOIN_CASH]]
+  const networkData = selectBlockchainNetworkId(BLOCKCHAIN_BITCOIN_CASH)(state)
+  const network = bitcoin.networks[networkData]
 
   switch (account.decryptedWallet.entry.encrypted[0].type) {
     case WALLET_TYPE_MEMORY: {
@@ -97,8 +98,8 @@ export const getBitcoinCashSigner = (state) => {
 
 export const getLitecoinSigner = (state) => {
   const account = getPersistAccount(state)
-  const networkData = getSelectedNetwork()(state)
-  const network = bitcoin.networks[networkData[BLOCKCHAIN_LITECOIN]]
+  const networkData = selectBlockchainNetworkId(BLOCKCHAIN_LITECOIN)(state)
+  const network = bitcoin.networks[networkData]
 
   switch (account.decryptedWallet.entry.encrypted[0].type) {
     case WALLET_TYPE_MEMORY: {

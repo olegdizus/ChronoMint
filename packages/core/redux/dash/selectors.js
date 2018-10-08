@@ -4,7 +4,8 @@
  */
 
 import bitcoin from 'bitcoinjs-lib'
-import { getPersistAccount, getSelectedNetwork } from '../persistAccount/selectors'
+import { selectCurrentNetworkBlockchains } from '@chronobank/nodes/redux/selectors'
+import { getPersistAccount } from '../persistAccount/selectors'
 import {
   WALLET_TYPE_MEMORY,
   WALLET_TYPE_METAMASK,
@@ -18,7 +19,7 @@ import DashMemoryDevice from '../../services/signers/DashMemoryDevice'
 
 export const getDashSigner = (state) => {
   const account = getPersistAccount(state)
-  const networkData = getSelectedNetwork()(state)
+  const networkData = selectCurrentNetworkBlockchains(state)
   const network = bitcoin.networks[networkData[BLOCKCHAIN_DASH]]
 
   switch (account.decryptedWallet.entry.encrypted[0].type) {

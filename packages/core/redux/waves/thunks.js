@@ -3,13 +3,13 @@
  * Licensed under the AGPL Version 3 license.
  */
 
+import { selectCurrentNetwork } from '@chronobank/nodes/redux/selectors'
 import * as WavesUtils from './utils'
 import * as WavesActions from './actions'
 import { getToken } from '../tokens/selectors'
 import { modalsOpen } from '../modals/actions'
 import { getWavesSigner, pendingEntrySelector } from './selectors'
 import { describePendingWavesTx } from '../../describers'
-import { getSelectedNetwork } from '../persistAccount/selectors'
 import TxExecModel from '../../models/TxExecModel'
 import { DUCK_TOKENS } from '../tokens/constants'
 import tokenService from '../../services/TokenService'
@@ -19,7 +19,7 @@ import { showSignerModal, closeSignerModal } from '../modals/thunks'
 export const executeWavesTransaction = ({ tx, options }) => async (dispatch, getState) => {
   const state = getState()
   const token = getToken(options.symbol)(state)
-  const network = getSelectedNetwork()(state)
+  const network = selectCurrentNetwork(state)
   const prepared = dispatch(WavesUtils.prepareWavesTransaction(tx, token, network))
   const entry = WavesUtils.createWavesTxEntryModel({ tx: prepared }, options)
 

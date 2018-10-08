@@ -6,6 +6,7 @@
 import bitcoin from 'bitcoinjs-lib'
 import type { Dispatch } from 'redux'
 import * as BitcoinMiddlewaresAPI from '@chronobank/nodes/httpNodes/api/chronobankNodes/bitcoins'
+import { selectCurrentNetwork } from '@chronobank/nodes/redux/selectors'
 import { modalsOpen } from '../modals/actions'
 import { DUCK_PERSIST_ACCOUNT } from '../persistAccount/constants'
 import {
@@ -13,7 +14,6 @@ import {
 } from '../../models'
 import * as BitcoinActions from './actions'
 import * as BitcoinUtils from './utils'
-import { getSelectedNetwork } from '../persistAccount/selectors'
 import { showSignerModal, closeSignerModal } from '../modals/thunks'
 
 import { describePendingBitcoinTx } from '../../describers'
@@ -39,7 +39,7 @@ export const executeBitcoinTransaction = ({ tx, options = {} }) => async (dispat
     const state = getState()
     const token = getToken(options.symbol)(state)
     const blockchain = token.blockchain()
-    const network = getSelectedNetwork()(state)
+    const network = selectCurrentNetwork(state)
     const utxos = await dispatch(getAddressUTXOS(tx.from, blockchain))
     const prepared = await dispatch(BitcoinUtils.prepareBitcoinTransaction(tx, token, network, utxos))
     const entry = BitcoinUtils.createBitcoinTxEntryModel({
@@ -155,7 +155,7 @@ const signTransaction = ({ entry, signer }) => async (dispatch, getState) => {
   dispatch(BitcoinActions.bitcoinSignTx())
 
   try {
-    const network = getSelectedNetwork()(getState())
+    const network = selectCurrentNetwork(getState())
     const { selectedWallet } = getState().get(DUCK_PERSIST_ACCOUNT)
     const unsignedTxHex = entry.tx.prepared.buildIncomplete().toHex()
 

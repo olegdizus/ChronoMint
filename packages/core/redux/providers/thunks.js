@@ -12,7 +12,7 @@ import { selectCurrentNetwork } from '@chronobank/nodes/redux/selectors'
 
 /* eslint-disable-next-line import/prefer-default-export */
 export const initProviders = () => async (dispatch, getState) => {
-  const { network } = selectCurrentNetwork(getState())
+  const network = selectCurrentNetwork(getState())
 
   ethereumProvider.setNetworkSettings(network)
   bccProvider.setNetworkSettings(network)
